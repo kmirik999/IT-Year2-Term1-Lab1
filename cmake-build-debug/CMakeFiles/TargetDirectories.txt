@@ -1,0 +1,3 @@
+/Users/mirikkryvoruchko/CLionProjects/IT-Year2-Term1-Lab1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/mirikkryvoruchko/CLionProjects/IT-Year2-Term1-Lab1/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/mirikkryvoruchko/CLionProjects/IT-Year2-Term1-Lab1/cmake-build-debug/CMakeFiles/IT_Year2_Term1_Lab1.dir
