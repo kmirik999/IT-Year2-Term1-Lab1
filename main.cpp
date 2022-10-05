@@ -177,19 +177,46 @@ void systempause() {
     cout << "Enter 'e' and press enter to continue...";
     cin >> s;
 }
+string commands[] =
+        {
+                "0. End program",
+                "1. Append text symbols to the end",
+                "2. Start the new line",
+                "3. Use files to loading/saving the information",
+                "4. Print the current text to console",
+                "5. Insert the text by line and symbol index",
+                "6. Search",
+                "7. Clearing the console"
+        };
 
 int main() {
+    int stop = 0;
     while (true) {
 
         system("clear");
-        cout << "Choose the command:\n";
+        if(stop == 0) {
+            cout << "Write -help to see the commands\n";
+
+            string inputST;
+            cin >> inputST;
+
+            if (inputST == "-help") {
+                for (string f: commands)  //ітератор
+                {
+                    cout << f << endl;
+                }
+            }
+            stop++;
+        }
         int input;
+        cout << "Choose the command:\n";
         cin >> input;
 
         switch(input)
         {
             case 0:
                 return 0;
+                break;
             case 1:
                 append_to_end();
                 break;
@@ -216,5 +243,4 @@ int main() {
         }
         systempause();
     }
-
 }
