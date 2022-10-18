@@ -443,6 +443,66 @@ void paste()
     text_1 = new_text;
     text_length = text_length + safeTextPaste.length();
 }
+void insert_replacement()
+{
+    char* text_new = new char[text_length + 1];
+
+    int line = 0, index = 0;
+    string addText;
+    cout << "Choose line and index: " << endl;
+
+    cout << "Line: ";
+    cin >> line;
+
+    cout << "Index: ";
+    cin >> index;
+
+    cin.ignore(); // Чистить поток вводу
+
+    char newstr[10000];
+    cout << "Insert text to replace another: ";
+    cin.getline(newstr, 10000);
+
+    int cline = 0;
+    int pos = -1;
+
+    for (int i = 0; i < text_length; i++)
+    {
+        //Якщо шуканий рядок знайден, то обчислюємо позіцію в тексті, куди треба додати текст user
+        if (cline == line) {
+            pos = i + index;
+            break;
+        }
+        //Якщо бачить перехід на новий рядок, то додає cline++ поки не знайде шуканий рядок
+        if (text_1[i] == '\n') cline++;
+    }
+
+    //Якщо позиція не знайдена - виводимо помилку
+    if (pos == -1) {
+        cout << "ERR!\n";
+        return;
+    }
+
+    char* new_text = new char[text_length + strlen(newstr)]; // запитує перегляд пам'яті, і отримує вказівник на її пам'ять
+
+    for (int i = 0; i < pos; i++)
+    {
+        new_text[i] = text_1[i]; // Перебирає послідовно кожну літеру старого стрінга, який збережений комірці пам'яті за вказівником text_1, та зберігає в іншу комірку пам'яті за вказівником text_new
+    }
+
+    for (int i = 0; i < strlen(newstr); i++)
+    {
+        new_text[i + pos] = newstr[i]; // Перебирає послідовно кожну літеру нового стрінга(тот, що user хоче додати) та зберігає в іншу комірку пам'яті за вказівником text_new
+    }
+
+    for (int i = pos + strlen(newstr); i < text_length; i++)
+    {
+        new_text[i] = text_1[i]; // Перебирає послідовно кожну літеру тексту, який залишилось додати після видалення старогу
+    }
+
+    delete[] text_1;
+    text_1 = new_text;
+}
 
 void search() {
     string text_to_find;
@@ -482,7 +542,8 @@ string commands[] =
                 "10. Redo",
                 "11. Cut",
                 "12. Copy",
-                "13. Paste"
+                "13. Paste",
+                "14. Insert_replacement"
         };
 
 int main() {
@@ -559,6 +620,9 @@ int main() {
                 break;
             case 13:
                 paste();
+                break;
+            case 14:
+                insert_replacement();
                 break;
             default:
                 cout << "Unknown command\n";
