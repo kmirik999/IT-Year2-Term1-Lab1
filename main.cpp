@@ -8,7 +8,6 @@ using namespace std;
 
 char* text_1;
 int text_length;
-int safeText_length;
 string safeTextS;
 string safeTextRedo;
 string safeTextPaste;
@@ -28,6 +27,47 @@ int find_string(string str, int pos)
             }
     }
     return - 1;
+}
+
+void safe_text()
+{
+    for (int i = 0; i < text_length; i++)
+    {
+        safeTextS += text_1[i];
+    }
+}
+
+void safe_text_redo()
+{
+    for (int i = 0; i < text_length; i++)
+    {
+        safeTextRedo += text_1[i];
+    }
+}
+
+void undo_command()
+{
+    text_1 = new char[safeTextS.length()];
+
+    for (int i = 0; i < safeTextS.length(); i++)
+    {
+        text_1[i] = safeTextS[i];
+    }
+
+    text_length = safeTextS.length();
+
+}
+
+void redo_command()
+{
+    text_1 = new char[safeTextRedo.length()];
+
+    for (int i = 0; i < safeTextRedo.length(); i++)
+    {
+        text_1[i] = safeTextRedo[i];
+    }
+
+    text_length = safeTextRedo.length();
 }
 
 void append_string(string newstr)
@@ -57,6 +97,62 @@ void append_to_end()
     append_string(newstr);
 }
 
+void delete_command()
+{
+    char* text_new = new char[text_length + 1];
+
+    int line = 0, index = 0, numSymD = 0;
+    cout << "Choose line and index: " << endl;
+
+    cout << "Line: ";
+    cin >> line;
+
+    cout << "Index: ";
+    cin >> index;
+
+    cin.ignore(); // Чистить поток вводу
+
+    cout << "Enter number of symbols to delete: ";
+    cin >> numSymD;
+
+
+    int cline = 0;
+    int pos = -1;
+
+    for (int i = 0; i < text_length; i++)
+    {
+        //Якщо шуканий рядок знайден, то обчислюємо позіцію в тексті, куди треба додати текст user
+        if (cline == line) {
+            pos = i + index;
+            break;
+        }
+        //Якщо бачить перехід на новий рядок, то додає cline++ поки не знайде шуканий рядок
+        if (text_1[i] == '\n') cline++;
+    }
+
+    //Якщо позиція не знайдена - виводимо помилку
+    if (pos == -1) {
+        cout << "ERR!\n";
+        return;
+    }
+
+    char* new_text = new char[text_length]; // запитує перегляд пам'яті, і отримує вказівник на її пам'ять
+    for (int i = 0; i < pos; i++)
+    {
+        new_text[i] = text_1[i]; // Перебирає послідовно кожну літеру старого стрінга, який збережений комірці пам'яті за вказівником text_1, та зберігає в іншу комірку пам'яті за вказівником text_new
+    }
+
+    for (int i = pos; i < text_length; i++)
+    {
+        new_text[i] = text_1[i + numSymD]; // Перебирає послідовно кожну літеру тексту, який залишилось додати після видалення старогу
+    }
+
+    delete[] text_1;
+    text_1 = new_text;
+
+    text_length = text_length - numSymD;
+}
+
 // Функція додає новий ENTER до вже створьоного тексту(Новий рядок)
 void newline()
 {
@@ -72,7 +168,8 @@ void newline()
 
     text_1 = text_new;
     text_length++;
-    text_new[text_length] = '\n';
+    //text_new[text_length] = '\n';
+    text_1[text_length] = '\n';
 
     cout << "New line is started\n";
 }
@@ -125,100 +222,6 @@ void print()
     }
     cout <<'\n';
 }
-void delete_command()
-{
-    char* text_new = new char[text_length + 1];
-
-    int line = 0, index = 0, numSymD = 0;
-    cout << "Choose line and index: " << endl;
-
-    cout << "Line: ";
-    cin >> line;
-
-    cout << "Index: ";
-    cin >> index;
-
-    cin.ignore(); // Чистить поток вводу
-
-    cout << "Enter number of symbols to delete: ";
-    cin >> numSymD;
-
-
-    int cline = 0;
-    int pos = -1;
-
-    for (int i = 0; i < text_length; i++)
-    {
-        //Якщо шуканий рядок знайден, то обчислюємо позіцію в тексті, куди треба додати текст user
-        if (cline == line) {
-            pos = i + index;
-            break;
-        }
-        //Якщо бачить перехід на новий рядок, то додає cline++ поки не знайде шуканий рядок
-        if (text_1[i] == '\n') cline++;
-    }
-
-    //Якщо позиція не знайдена - виводимо помилку
-    if (pos == -1) {
-        cout << "ERR!\n";
-        return;
-    }
-
-    char* new_text = new char[text_length]; // запитує перегляд пам'яті, і отримує вказівник на її пам'ять
-    for (int i = 0; i < pos; i++)
-    {
-        new_text[i] = text_1[i]; // Перебирає послідовно кожну літеру старого стрінга, який збережений комірці пам'яті за вказівником text_1, та зберігає в іншу комірку пам'яті за вказівником text_new
-    }
-
-    for (int i = pos; i < text_length; i++)
-    {
-        new_text[i] = text_1[i + numSymD]; // Перебирає послідовно кожну літеру тексту, який залишилось додати після нового
-    }
-
-    delete[] text_1;
-    text_1 = new_text;
-    text_length = text_length - numSymD;
-}
-void safe_text()
-{
-    for (int i = 0; i < text_length; i++)
-    {
-        safeTextS += text_1[i];
-    }
-}
-
-void safe_text_redo()
-{
-    for (int i = 0; i < text_length; i++)
-    {
-        safeTextRedo += text_1[i];
-    }
-}
-
-void undo_command()
-{
-    text_1 = new char[safeTextS.length()];
-
-    for (int i = 0; i < safeTextS.length(); i++)
-    {
-        text_1[i] = safeTextS[i];
-    }
-
-    text_length = safeTextS.length();
-
-}
-
-void redo_command()
-{
-    text_1 = new char[safeTextRedo.length()];
-
-    for (int i = 0; i < safeTextRedo.length(); i++)
-    {
-        text_1[i] = safeTextRedo[i];
-    }
-
-    text_length = safeTextRedo.length();
-}
 
 // Додає текст user я якийсь конкретний рядок та позіцію в старому тексті
 void insert_text() {
@@ -241,6 +244,7 @@ void insert_text() {
 
     int cline = 0;
     int pos = -1;
+
     for (int i = 0; i < text_length; i++)
     {
         // Якщо шуканий рядок знайден, то обчислюємо позіцію в тексті, куди треба додати текст user
@@ -276,6 +280,170 @@ void insert_text() {
     text_length = text_length + strlen(newstr);
 }
 
+void cut()
+{
+    char* text_new = new char[text_length + 1];
+
+    int line = 0, index = 0, numSymCut = 0;
+    cout << "Choose line and index: " << endl;
+
+    cout << "Line: ";
+    cin >> line;
+
+    cout << "Index: ";
+    cin >> index;
+
+    cin.ignore(); // Чистить поток вводу
+
+    cout << "Enter number of symbols to Cut: ";
+    cin >> numSymCut;
+
+
+    int cline = 0;
+    int pos = -1;
+
+    for (int i = 0; i < text_length; i++)
+    {
+        //Якщо шуканий рядок знайден, то обчислюємо позіцію в тексті, куди треба додати текст user
+        if (cline == line) {
+            pos = i + index;
+            break;
+        }
+        //Якщо бачить перехід на новий рядок, то додає cline++ поки не знайде шуканий рядок
+        if (text_1[i] == '\n') cline++;
+    }
+
+    //Якщо позиція не знайдена - виводимо помилку
+    if (pos == -1) {
+        cout << "ERR!\n";
+        return;
+    }
+
+    char* new_text = new char[text_length]; // запитує перегляд пам'яті, і отримує вказівник на її пам'ять
+    for (int i = 0; i < pos; i++)
+    {
+        new_text[i] = text_1[i]; // Перебирає послідовно кожну літеру старого стрінга, який збережений комірці пам'яті за вказівником text_1, та зберігає в іншу комірку пам'яті за вказівником text_new
+    }
+
+    for (int i = pos; i < pos + numSymCut; i++)
+    {
+        safeTextPaste += text_1[i];
+    }
+
+    for (int i = pos; i < text_length; i++)
+    {
+        new_text[i] = text_1[i + numSymCut]; // Перебирає послідовно кожну літеру тексту, який залишилось додати після видалення старогу
+    }
+
+    delete[] text_1;
+    text_1 = new_text;
+
+    text_length = text_length - numSymCut;
+
+}
+
+void copy()
+{
+    char* text_new = new char[text_length + 1];
+
+    int line = 0, index = 0, numSymCopy = 0;
+    cout << "Choose line and index: " << endl;
+
+    cout << "Line: ";
+    cin >> line;
+
+    cout << "Index: ";
+    cin >> index;
+
+    cin.ignore(); // Чистить поток вводу
+
+    cout << "Enter number of symbols to Copy: ";
+    cin >> numSymCopy;
+
+
+    int cline = 0;
+    int pos = -1;
+
+    for (int i = 0; i < text_length; i++)
+    {
+        //Якщо шуканий рядок знайден, то обчислюємо позіцію в тексті, куди треба додати текст user
+        if (cline == line) {
+            pos = i + index;
+            break;
+        }
+        //Якщо бачить перехід на новий рядок, то додає cline++ поки не знайде шуканий рядок
+        if (text_1[i] == '\n') cline++;
+    }
+
+    //Якщо позиція не знайдена - виводимо помилку
+    if (pos == -1) {
+        cout << "ERR!\n";
+        return;
+    }
+
+    //char* new_text = new char[text_length]; // запитує перегляд пам'яті, і отримує вказівник на її пам'ять
+
+    for (int i = pos; i < pos + numSymCopy; i++)
+    {
+        safeTextPaste += text_1[i];
+    }
+
+    //delete[] text_1;
+    //text_1 = new_text;
+
+    //text_length = text_length - numSymCopy;
+}
+
+void paste()
+{
+    int line = 0, index = 0;
+    cout << "Choose line and index: " << endl;
+
+    cout << "Line: ";
+    cin >> line;
+
+    cout << "Index: ";
+    cin >> index;
+
+    int cline = 0;
+    int pos = -1;
+
+    for (int i = 0; i < text_length; i++)
+    {
+        // Якщо шуканий рядок знайден, то обчислюємо позіцію в тексті, куди треба додати текст user
+        if (cline == line) {
+            pos = i + index;
+            break;
+        }
+
+        // Якщо бачить перехід на новий рядок, то додає cline++ поки не знайде шуканий рядок
+        if (text_1[i] == '\n') cline++;
+    }
+
+    // Якщо позиція не знайдена - виводимо помилку
+    if (pos == -1) {
+        cout << "ERR!\n";
+        return;
+    }
+
+    char* new_text = new char[text_length + safeTextPaste.length()]; // запитує перегляд пам'яті, і отримує вказівник на її пам'ять
+    for (int i = 0; i < pos; i++)
+    {
+        new_text[i] = text_1[i]; // Перебирає послідовно кожну літеру старого стрінга, який збережений комірці пам'яті за вказівником text_1, та зберігає в іншу комірку пам'яті за вказівником text_new
+    }
+    for (int i = 0; i < safeTextPaste.length(); i++)
+    {
+        new_text[i + pos] = safeTextPaste[i]; // Перебирає послідовно кожну літеру нового стрінга(тот, що user хоче додати) та зберігає в іншу комірку пам'яті за вказівником text_new
+    }
+    for (int i = pos; i < text_length; i++)
+    {
+        new_text[i + safeTextPaste.length()] = text_1[i]; // Перебирає послідовно кожну літеру тексту, який залишилось додати після нового
+    }
+    delete[] text_1;
+    text_1 = new_text;
+    text_length = text_length + safeTextPaste.length();
+}
+
 void search() {
     string text_to_find;
     cout << "Enter text to search: ";
@@ -309,9 +477,12 @@ string commands[] =
                 "5. Print the current text to console",
                 "6. Insert the text by line and symbol index",
                 "7. Search",
-                "8. Delete command",
-                "9. undo_command",
-                "10.redo_command"
+                "8. Delete",
+                "9. Undo",
+                "10. Redo",
+                "11. Cut",
+                "12. Copy",
+                "13. Paste"
         };
 
 int main() {
@@ -379,6 +550,15 @@ int main() {
                 break;
             case 10:
                 redo_command();
+                break;
+            case 11:
+                cut();
+                break;
+            case 12:
+                copy();
+                break;
+            case 13:
+                paste();
                 break;
             default:
                 cout << "Unknown command\n";
