@@ -6,30 +6,155 @@ using namespace std;
 // Develop your own data structure with memory allocation for strings inside
 // one option - finish the implementation with string object, and then to rework all places with string you have
 
-char* text_1;
-int text_length;
-string safeTextS;
-string safeTextRedo;
-string safeTextPaste;
+class StringFormatter
+{
+public:
+    int find_string(string str, int pos);
+    void safe_text();
+    void safe_text_redo();
+    void undo_command();
+    void redo_command();
+    void append_string(string newstr);
+    void append_to_end();
+    void delete_command();
+    void newline();
+    void save();
+    void load();
+    void print();
+    void insert_text();
+    void cut();
+    void copy();
+    void paste();
+    void search();
+    void systempause();
+
+public:
+    char* text_1;
+    int text_length;
+    string safeTextS;
+    string safeTextRedo;
+    string safeTextPaste;
+};
+
+string commands[] =
+        {
+                "0. End program",
+                "1. Append text symbols to the end",
+                "2. Start the new line",
+                "3. Saving the information",
+                "4. Loading the information from file",
+                "5. Print the current text to console",
+                "6. Insert the text by line and symbol index",
+                "7. Search",
+                "8. Delete",
+                "9. Undo",
+                "10. Redo",
+                "11. Cut",
+                "12. Copy",
+                "13. Paste"
+        };
+
+int main() {
+    int stop = 0;
+    StringFormatter strFormatter;
+    while (true) {
+        system("clear");
+        if (stop == 0) {
+            cout << "Write -help to see the commands\n";
+
+            string inputST;
+            cin >> inputST;
+
+            if (inputST == "-help") {
+                for (string f : commands)  //ітератор
+                {
+                    cout << f << endl;
+                }
+            }
+            stop++;
+        }
+        int input;
+        cout << "Choose the command:\n";
+        cin >> input;
+
+        switch (input)
+        {
+            case 0:
+                return 0;
+                break;
+            case 1:
+                strFormatter.safe_text();
+                strFormatter.append_to_end();
+                strFormatter.safe_text_redo();
+                break;
+            case 2:
+                strFormatter.safe_text();
+                strFormatter.newline();
+                strFormatter.safe_text_redo();
+                break;
+            case 3:
+                strFormatter.save();
+                break;
+            case 4:
+                strFormatter.load();
+                break;
+            case 5:
+                strFormatter.print();
+                break;
+            case 6:
+                strFormatter.safe_text();
+                strFormatter.insert_text();
+                strFormatter.safe_text_redo();
+                break;
+            case 7:
+                strFormatter.search();
+                break;
+            case 8:
+                strFormatter.safe_text();
+                strFormatter.delete_command();
+                strFormatter.safe_text_redo();
+                break;
+            case 9:
+                strFormatter.undo_command();
+                break;
+            case 10:
+                strFormatter.redo_command();
+                break;
+            case 11:
+                strFormatter.cut();
+                break;
+            case 12:
+                strFormatter.copy();
+                break;
+            case 13:
+                strFormatter.paste();
+                break;
+            default:
+                cout << "Unknown command\n";
+        }
+        strFormatter.systempause();
+    }
+}
+
 
 // Знаходить шуканий шматок тексту, повертає індекс позиції початку шуканого тексту. Або повертає -1(не знайшов нічого)
-int find_string(string str, int pos)
+int StringFormatter::find_string(string str, int pos)
 {
     for (int i = pos; i <= text_length - str.size(); ++i)
     {
-        if(str[0] == text_1[i])
+        if (str[0] == text_1[i])
             for (int j = 1; j < str.size(); ++j)
             {
                 if (str[j] != text_1[i + j])
                     break;
-                else if(j == str.size() - 1)
+                else if (j == str.size() - 1)
                     return i;
             }
     }
-    return - 1;
+    return -1;
 }
 
-void safe_text()
+void StringFormatter::safe_text()
 {
     for (int i = 0; i < text_length; i++)
     {
@@ -37,7 +162,7 @@ void safe_text()
     }
 }
 
-void safe_text_redo()
+void StringFormatter::safe_text_redo()
 {
     for (int i = 0; i < text_length; i++)
     {
@@ -45,7 +170,7 @@ void safe_text_redo()
     }
 }
 
-void undo_command()
+void StringFormatter::undo_command()
 {
     text_1 = new char[safeTextS.length()];
 
@@ -58,7 +183,7 @@ void undo_command()
 
 }
 
-void redo_command()
+void StringFormatter::redo_command()
 {
     text_1 = new char[safeTextRedo.length()];
 
@@ -70,9 +195,9 @@ void redo_command()
     text_length = safeTextRedo.length();
 }
 
-void append_string(string newstr)
+void StringFormatter::append_string(string newstr)
 {
-    char *text_new = new char[text_length + newstr.size()]; // запитує перегляд пам'яті, і отримує вказівник на її пам'ять
+    char* text_new = new char[text_length + newstr.size()]; // запитує перегляд пам'яті, і отримує вказівник на її пам'ять
     for (int i = 0; i < text_length; ++i)
     {
         *(text_new + i) = text_1[i]; // Перебирає послідовно кожну літеру старого стрінга, який збережений комірці пам'яті за вказівником text_1, та зберігає в іншу комірку пам'яті за вказівником text_new
@@ -87,7 +212,7 @@ void append_string(string newstr)
     text_length = text_length + newstr.size(); // Змінюємо довжину text_length, бо додався новий текст(тому стрінг став довшим)
 }
 
-void append_to_end()
+void StringFormatter::append_to_end()
 {
     string newstr;
     cout << "Enter text to append: ";
@@ -97,9 +222,8 @@ void append_to_end()
     append_string(newstr);
 }
 
-void delete_command()
+void StringFormatter::delete_command()
 {
-    char* text_new = new char[text_length + 1];
 
     int line = 0, index = 0, numSymD = 0;
     cout << "Choose line and index: " << endl;
@@ -154,7 +278,7 @@ void delete_command()
 }
 
 // Функція додає новий ENTER до вже створьоного тексту(Новий рядок)
-void newline()
+void StringFormatter::newline()
 {
     char* text_new = new char[text_length + 1]; // запитує перегляд пам'яті, і отримує вказівник на її пам'ять
     for (int i = 0; i < text_length; ++i)
@@ -174,7 +298,7 @@ void newline()
     cout << "New line is started\n";
 }
 
-void save()
+void StringFormatter:: save()
 {
     string filename;
     cout << "Enter the file name for saving: ";
@@ -191,7 +315,7 @@ void save()
     cout << "Text have been saved successfully\n";
 }
 
-void load()
+void StringFormatter::load()
 {
     string filename;
     cout << "Enter the file name for loading: ";
@@ -214,19 +338,19 @@ void load()
 }
 
 // Виводить весь текст у консоль
-void print()
+void StringFormatter::print()
 {
     for (int i = 0; i < text_length; ++i)
     {
         cout << text_1[i];
     }
-    cout <<'\n';
+    cout << '\n';
 }
 
 // Додає текст user я якийсь конкретний рядок та позіцію в старому тексті
-void insert_text() {
+void StringFormatter::insert_text() {
     int line = 0, index = 0;
-    cout << "Choose line and index: "<< endl;
+    cout << "Choose line and index: " << endl;
 
     cout << "Line: ";
     cin >> line;
@@ -271,18 +395,18 @@ void insert_text() {
     {
         new_text[i + pos] = newstr[i]; // Перебирає послідовно кожну літеру нового стрінга(тот, що user хоче додати) та зберігає в іншу комірку пам'яті за вказівником text_new
     }
-    for (int i = pos; i < text_length ; i++)
+    for (int i = pos; i < text_length; i++)
     {
-        new_text[i + strlen(newstr)]= text_1[i]; // Перебирає послідовно кожну літеру тексту, який залишилось додати після нового
+        new_text[i + strlen(newstr)] = text_1[i]; // Перебирає послідовно кожну літеру тексту, який залишилось додати після нового
     }
     delete[] text_1;
     text_1 = new_text;
     text_length = text_length + strlen(newstr);
 }
 
-void cut()
+void StringFormatter::cut()
 {
-    char* text_new = new char[text_length + 1];
+
 
     int line = 0, index = 0, numSymCut = 0;
     cout << "Choose line and index: " << endl;
@@ -342,9 +466,8 @@ void cut()
 
 }
 
-void copy()
+void StringFormatter::copy()
 {
-    char* text_new = new char[text_length + 1];
 
     int line = 0, index = 0, numSymCopy = 0;
     cout << "Choose line and index: " << endl;
@@ -394,7 +517,7 @@ void copy()
     //text_length = text_length - numSymCopy;
 }
 
-void paste()
+void StringFormatter::paste()
 {
     int line = 0, index = 0;
     cout << "Choose line and index: " << endl;
@@ -443,68 +566,8 @@ void paste()
     text_1 = new_text;
     text_length = text_length + safeTextPaste.length();
 }
-void insert_replacement()
-{
-    char* text_new = new char[text_length + 1];
 
-    int line = 0, index = 0;
-    string addText;
-    cout << "Choose line and index: " << endl;
-
-    cout << "Line: ";
-    cin >> line;
-
-    cout << "Index: ";
-    cin >> index;
-
-    cin.ignore(); // Чистить поток вводу
-
-    char newstr[10000];
-    cout << "Insert text to replace another: ";
-    cin.getline(newstr, 10000);
-
-    int cline = 0;
-    int pos = -1;
-
-    for (int i = 0; i < text_length; i++)
-    {
-        //Якщо шуканий рядок знайден, то обчислюємо позіцію в тексті, куди треба додати текст user
-        if (cline == line) {
-            pos = i + index;
-            break;
-        }
-        //Якщо бачить перехід на новий рядок, то додає cline++ поки не знайде шуканий рядок
-        if (text_1[i] == '\n') cline++;
-    }
-
-    //Якщо позиція не знайдена - виводимо помилку
-    if (pos == -1) {
-        cout << "ERR!\n";
-        return;
-    }
-
-    char* new_text = new char[text_length + strlen(newstr)]; // запитує перегляд пам'яті, і отримує вказівник на її пам'ять
-
-    for (int i = 0; i < pos; i++)
-    {
-        new_text[i] = text_1[i]; // Перебирає послідовно кожну літеру старого стрінга, який збережений комірці пам'яті за вказівником text_1, та зберігає в іншу комірку пам'яті за вказівником text_new
-    }
-
-    for (int i = 0; i < strlen(newstr); i++)
-    {
-        new_text[i + pos] = newstr[i]; // Перебирає послідовно кожну літеру нового стрінга(тот, що user хоче додати) та зберігає в іншу комірку пам'яті за вказівником text_new
-    }
-
-    for (int i = pos + strlen(newstr); i < text_length; i++)
-    {
-        new_text[i] = text_1[i]; // Перебирає послідовно кожну літеру тексту, який залишилось додати після видалення старогу
-    }
-
-    delete[] text_1;
-    text_1 = new_text;
-}
-
-void search() {
+void StringFormatter::search() {
     string text_to_find;
     cout << "Enter text to search: ";
     cin >> text_to_find;
@@ -522,111 +585,9 @@ void search() {
     }
 }
 
-void systempause() {
+void StringFormatter::systempause()
+{
     string s;
     cout << "Enter 'e' and press enter to continue...";
     cin >> s;
-}
-string commands[] =
-        {
-                "0. End program",
-                "1. Append text symbols to the end",
-                "2. Start the new line",
-                "3. Saving the information",
-                "4. Loading the information from file",
-                "5. Print the current text to console",
-                "6. Insert the text by line and symbol index",
-                "7. Search",
-                "8. Delete",
-                "9. Undo",
-                "10. Redo",
-                "11. Cut",
-                "12. Copy",
-                "13. Paste",
-                "14. Insert_replacement"
-        };
-
-int main() {
-    int stop = 0;
-    while (true) {
-
-        system("clear");
-        if(stop == 0) {
-            cout << "Write -help to see the commands\n";
-
-            string inputST;
-            cin >> inputST;
-
-            if (inputST == "-help") {
-                for (string f: commands)  //ітератор
-                {
-                    cout << f << endl;
-                }
-            }
-            stop++;
-        }
-        int input;
-        cout << "Choose the command:\n";
-        cin >> input;
-
-        switch(input)
-        {
-            case 0:
-                return 0;
-                break;
-            case 1:
-                safe_text();
-                append_to_end();
-                safe_text_redo();
-                break;
-            case 2:
-                safe_text();
-                newline();
-                safe_text_redo();
-                break;
-            case 3:
-                save();
-                break;
-            case 4:
-                load();
-                break;
-            case 5:
-                print();
-                break;
-            case 6:
-                safe_text();
-                insert_text();
-                safe_text_redo();
-                break;
-            case 7:
-                search();
-                break;
-            case 8:
-                safe_text();
-                delete_command();
-                safe_text_redo();
-                break;
-            case 9:
-                undo_command();
-                break;
-            case 10:
-                redo_command();
-                break;
-            case 11:
-                cut();
-                break;
-            case 12:
-                copy();
-                break;
-            case 13:
-                paste();
-                break;
-            case 14:
-                insert_replacement();
-                break;
-            default:
-                cout << "Unknown command\n";
-        }
-        systempause();
-    }
 }
